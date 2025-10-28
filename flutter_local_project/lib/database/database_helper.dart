@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/session.dart';
+import '../models/user_card.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -20,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'hotspot_voucher.db');
     return await openDatabase(
       path,
-      version: 2, // Updated version
+      version: 3, // Updated version
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -40,6 +41,16 @@ class DatabaseHelper {
         longitude REAL
       )
     ''');
+    await db.execute('''
+      CREATE TABLE user_cards(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userName TEXT,
+        password TEXT,
+        validityPeriod TEXT,
+        dataLimit TEXT,
+        createdAt TEXT
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -47,51 +58,41 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE sessions ADD COLUMN latitude REAL DEFAULT 0.0');
       await db.execute('ALTER TABLE sessions ADD COLUMN longitude REAL DEFAULT 0.0');
     }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE user_cards(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userName TEXT,
+          password TEXT,
+          validityPeriod TEXT,
+          dataLimit TEXT,
+          createdAt TEXT
+        )
+      ''');
+    }
   }
 
-  Future<int> insertSession(Session session) async {
+  // Existing session methods...
+
+  Future<int> insertUserCard(UserCard card) async {
     Database db = await database;
-    return await db.insert('sessions', session.toMap());
+    return await db.insert('user_cards', card.toMap());
   }
 
-  Future<List<Session>> getSessions() async {
+  Future<List<UserCard>> getUserCards() async {
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query('sessions');
+    List<Map<String, dynamic>> maps = await db.query('user_cards');
     return List.generate(maps.length, (i) {
-      return Session.fromMap(maps[i]);
+      return UserCard.fromMap(maps[i]);
     });
   }
 
-  Future<int> updateSession(Session session) async {
-    Database db = await database;
-    return await db.update(
-      'sessions',
-      session.toMap(),
-      where: 'id = ?',
-      whereArgs: [session.id],
-    );
-  }
-
-  Future<int> deleteSession(int id) async {
+  Future<int> deleteUserCard(int id) async {
     Database db = await database;
     return await db.delete(
-      'sessions',
+      'user_cards',
       where: 'id = ?',
       whereArgs: [id],
     );
-  }
-
-  Future<Map<String, dynamic>> getStatistics() async {
-    Database db = await database;
-    List<Map<String, dynamic>> result = await db.rawQuery('''
-      SELECT
-        COUNT(*) as totalSessions,
-        SUM(downloadData) as totalDownload,
-        SUM(uploadData) as totalUpload,
-        AVG(cpuLoad) as avgCpuLoad,
-        SUM(sessionTime) as totalTime
-      FROM sessions
-    ''');
-    return result.isNotEmpty ? result.first : {};
   }
 }
