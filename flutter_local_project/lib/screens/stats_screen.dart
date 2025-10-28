@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:printing/printing.dart';
+import '../services/pdf_service.dart';
 
 class StatsScreen extends StatelessWidget {
   final Map<String, dynamic> stats;
@@ -11,6 +13,15 @@ class StatsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Statistics'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () async {
+              final pdfData = await PdfService.generateReport();
+              await Printing.sharePdf(bytes: pdfData, filename: 'hotspot_report.pdf');
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
