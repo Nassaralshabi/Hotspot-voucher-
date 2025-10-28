@@ -6,6 +6,8 @@ class Session {
   int sessionTime; // in seconds
   double cpuLoad; // percentage
   String date;
+  double latitude;
+  double longitude;
 
   Session({
     this.id,
@@ -15,6 +17,8 @@ class Session {
     required this.sessionTime,
     required this.cpuLoad,
     required this.date,
+    required this.latitude,
+    required this.longitude,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +30,8 @@ class Session {
       'sessionTime': sessionTime,
       'cpuLoad': cpuLoad,
       'date': date,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -38,6 +44,8 @@ class Session {
       sessionTime: map['sessionTime'],
       cpuLoad: map['cpuLoad'],
       date: map['date'],
+      latitude: map['latitude'] ?? 0.0,
+      longitude: map['longitude'] ?? 0.0,
     );
   }
 }

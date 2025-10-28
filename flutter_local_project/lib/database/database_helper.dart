@@ -20,8 +20,9 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'hotspot_voucher.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Updated version
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -34,9 +35,18 @@ class DatabaseHelper {
         uploadData REAL,
         sessionTime INTEGER,
         cpuLoad REAL,
-        date TEXT
+        date TEXT,
+        latitude REAL,
+        longitude REAL
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE sessions ADD COLUMN latitude REAL DEFAULT 0.0');
+      await db.execute('ALTER TABLE sessions ADD COLUMN longitude REAL DEFAULT 0.0');
+    }
   }
 
   Future<int> insertSession(Session session) async {
