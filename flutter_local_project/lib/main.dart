@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
+import 'screens/map_screen.dart';
+import 'screens/stats_screen.dart';
+import 'screens/settings_screen.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Hotspot Voucher Local',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'MaterialIcons',
+      ),
+      home: const HomeScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+        '/map': (context) => const MapScreen(),
+        '/stats': (context) => const StatsScreen(),
+        '/settings': (context) => const SettingsScreen(),
+      },
+    );
+  }
+}
