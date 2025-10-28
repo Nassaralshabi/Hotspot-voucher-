@@ -12,6 +12,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
   bool _locationEnabled = true;
   String _theme = 'Light';
+  String _mikrotikUrl = '';
+  String _mikrotikUsername = '';
+  String _mikrotikPassword = '';
 
   @override
   void initState() {
@@ -25,6 +28,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _notificationsEnabled = prefs.getBool('notifications') ?? true;
       _locationEnabled = prefs.getBool('location') ?? true;
       _theme = prefs.getString('theme') ?? 'Light';
+      _mikrotikUrl = prefs.getString('mikrotik_url') ?? '';
+      _mikrotikUsername = prefs.getString('mikrotik_username') ?? '';
+      _mikrotikPassword = prefs.getString('mikrotik_password') ?? '';
     });
   }
 
@@ -33,6 +39,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setBool('notifications', _notificationsEnabled);
     await prefs.setBool('location', _locationEnabled);
     await prefs.setString('theme', _theme);
+    await prefs.setString('mikrotik_url', _mikrotikUrl);
+    await prefs.setString('mikrotik_username', _mikrotikUsername);
+    await prefs.setString('mikrotik_password', _mikrotikPassword);
   }
 
   @override
@@ -79,6 +88,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _saveSettings();
                 }
               },
+            ),
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('MikroTik Settings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              decoration: const InputDecoration(labelText: 'Router URL (e.g., http://192.168.88.1)'),
+              controller: TextEditingController(text: _mikrotikUrl),
+              onChanged: (value) => _mikrotikUrl = value,
+              onSubmitted: (_) => _saveSettings(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              decoration: const InputDecoration(labelText: 'Username'),
+              controller: TextEditingController(text: _mikrotikUsername),
+              onChanged: (value) => _mikrotikUsername = value,
+              onSubmitted: (_) => _saveSettings(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              controller: TextEditingController(text: _mikrotikPassword),
+              onChanged: (value) => _mikrotikPassword = value,
+              onSubmitted: (_) => _saveSettings(),
             ),
           ),
           ListTile(
